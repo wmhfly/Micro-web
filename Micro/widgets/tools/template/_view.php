@@ -1,0 +1,1 @@
+<?php echo $class?> Widget view file.
