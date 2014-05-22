@@ -56,6 +56,8 @@ Micro
  * 全部组件都存在2个隐藏配置，如果没有显示配置，则默认为：
  *  class: Hello
  *  viewFile: _view
+ *  system: false
+ *  默认非系统模块，系统模块不能禁用
  */
 return array(
 	'title'=&gt;'hello',

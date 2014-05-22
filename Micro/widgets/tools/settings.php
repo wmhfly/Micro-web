@@ -10,5 +10,6 @@
 return array(
 	'title'=>'Micro-web tools',
 	'description'=>'系统组件工具包',
+	'system'=>true,
 	'cache'=>false
 );

@@ -93,10 +93,13 @@ class Hook extends Component {
 	 * @param boolean $run
 	 */
 	public function widget($widget,$settings = array(),$run = null){
-		$settings = $this->getWidgetSetting($widget,$settings);
-		$cls = $settings['class'];
+		$settings = $this->getWidgetSetting($widget,$settings);	
+		#是否启用组件
+		if(isset($settings['lock']))
+			return;
 		#检测是否存在缓存
 		$isCache = $this->cache_level==1?(isset($settings['cache'])?$settings['cache']:false):false;
+		$cls = $settings['class'];
 		if(is_null($run)&&$isCache&&($output=M::app()->cache->get($cls.'~'.$settings['viewFile']))!==false){
 			echo $output;
 		}else{
@@ -117,6 +120,10 @@ class Hook extends Component {
 	 * @return array
 	 */
 	public function getWidgetSetting($widget,$settings){
+		$data = array();
+		#检测组件是否启用
+		if(is_file($sFile = $this->widgetFolder.$widget.DIRECTORY_SEPARATOR.'lock')!==false)
+			return array('lock'=>true);
 		if(is_file($sFile = $this->widgetFolder.$widget.DIRECTORY_SEPARATOR.'settings.php')!==false)
 			$data = include $sFile;
 		

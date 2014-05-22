@@ -8,7 +8,9 @@
  * @version 1.0
  */
  class <?php echo $class ?> extends Widget {
+ 
  	public function run(){
  		return array('title'=>'<?php echo $title ?>');
  	}
+ 	
  }

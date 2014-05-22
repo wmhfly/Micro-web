@@ -1,7 +1,7 @@
 <?php $this->widget('header',array(
-		'title'=>'Widgets Views',
+		'title'=>'Widgets manage',
 		'viewFile'=>'_tool',
-		'description'=>'工具包 - 组件查看工具'));
+		'description'=>'工具包 - 组件管理工具'));
 ?>
 <div class="content">
 <?php $this->widget('tools',array('viewFile'=>'MTool'));?>

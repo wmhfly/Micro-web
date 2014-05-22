@@ -21,6 +21,8 @@ class Tools extends Widget {
 				$result['list'] = $this->getCaches();
 			break;
 			case 'MTool':
+				if(M::app()->http->p&&M::app()->http->stu)
+					$this->switchWidget(M::app()->http->p,M::app()->http->stu);
 				$result['list'] = $this->getWidgets();
 			break;
 		}
@@ -28,18 +30,59 @@ class Tools extends Widget {
 	}
 	
 	/**
+	 * 组件状态切换
+	 * @param unknown $package
+	 * @param unknown $status
+	 */
+	private function switchWidget($package,$status){
+		$lock_file = M::app()->hook->widgetFolder.$package.DIRECTORY_SEPARATOR.'lock';
+		if($status=='Y'){
+			#安全检测，是否为系统组件
+			if(is_file($f=M::app()->hook->widgetFolder.$package.DIRECTORY_SEPARATOR.'settings.php')!==false){
+				$settings = include $f;
+				$isAllow = isset($settings['system'])? !$settings['system']:true;
+				if($isAllow){
+					@file_put_contents($lock_file, date('Y-m-d h:i:s',time()));
+					$tip = '切换为禁用';
+				}else{
+					$tip = '切换失败，系统组件不可切换';
+				}
+			}else{
+				$tip = '错误请求，组件不存在';
+			}			
+		}elseif(is_file($lock_file)){
+			@unlink($lock_file);
+			$tip = '切换为可用';
+		}else{
+			$tip = '错误请求';
+		}
+		M::app()->session->message = '组件包为：'.$package.'，'.$tip;
+		M::app()->http->redirect('?v=widget-manage');
+	}
+	
+	/**
 	 * 获取组件清单
 	 * @return array
 	 */
 	private function getWidgets(){
-		$widges = array();
+		$result = array(
+			'diys'=>array(),
+			'systems'=>array()
+		);
 		foreach (glob(M::app()->hook->widgetFolder.'*') as $item){
 			if(is_dir($item)&&is_file($f=$item.DIRECTORY_SEPARATOR.'settings.php')!==false){
 				$temp = include $f;
-				$widges[] = array('title'=>$temp['title'],'desc'=>$temp['description']);
+				$widget = (isset($temp['system'])&&$temp['system'])?'systems':'diys';
+				$result[$widget][] = array(
+						'package'=>substr($item, strrpos($item, '\\')+1),
+						'system'=>isset($temp['system'])?$temp['system']:false,
+						'title'=>$temp['title'],
+						'desc'=>$temp['description'],
+						'status'=>is_file($item.DIRECTORY_SEPARATOR.'lock')?'N':'Y'
+				);
 			}
 		}
-		return $widges;
+		return array_merge($result['systems'],$result['diys']);
 	}
 
 	

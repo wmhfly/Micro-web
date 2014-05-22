@@ -8,6 +8,9 @@
  * @version 1.0
  */
 return array(
-	<?php echo $folder==strtolower($class)?'':"'class'=>'".$class."',\n";?>'title'=>'<?php echo $title ?>',
+	<?php if($folder!=strtolower($class)):?>
+	'class'=>'<?php echo $class?>',
+	<?php endif;?>
+	'title'=>'<?php echo $title ?>',
 	'description'=>'<?php echo $description ?>',
 );
